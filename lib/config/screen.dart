@@ -22,6 +22,6 @@ class ScreenModel extends ChangeNotifier {
   double heightRatio(double ratio) {
     return _maxHeight * ratio;
   }
-// 不改变的尺寸
 
+  late final bool isMobile;
 }

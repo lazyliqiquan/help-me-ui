@@ -7,18 +7,23 @@ import 'package:help_me_ui/utils/network.dart' as network;
 import 'package:url_strategy/url_strategy.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
+import 'package:universal_html/html.dart' as html;
 
 void main() {
   setPathUrlStrategy();
-//给每次请求的headers加上token
+  //给每次请求的headers加上token
   network.dio.interceptors
       .add(InterceptorsWrapper(onRequest: (options, handler) {
     options.headers['Authorization'] = local_store.getHash('token');
     return handler.next(options);
   }));
+  //判断当前Flutter Web应用程序是在移动端设备还是在桌面上运行
+  ScreenModel screenModel = ScreenModel();
+  screenModel.isMobile = html.window.navigator.userAgent.contains('Mobi');
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => ThemeModel()),
     ChangeNotifierProvider(create: (_) => ScreenModel()),
+    ChangeNotifierProvider.value(value: screenModel)
   ], child: const MyApp()));
 }
 
@@ -28,6 +33,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeModel themeModel = context.watch<ThemeModel>();
+    final ScreenModel screenModel = context.watch<ScreenModel>();
     return FluentApp.router(
       title: 'help me',
       debugShowCheckedModeBanner: false,
@@ -46,8 +52,8 @@ class MyApp extends StatelessWidget {
             scrollbarPressingColor: Colors.grey[140],
             thickness: 15,
             hoveringThickness: 15,
-            radius: const Radius.circular(0),
-            hoveringRadius: const Radius.circular(0)),
+            radius: Radius.circular(screenModel.isMobile ? 15 : 0),
+            hoveringRadius: Radius.circular(screenModel.isMobile ? 15 : 0)),
         accentColor: themeModel.color,
         visualDensity: VisualDensity.standard,
         activeColor: Colors.purple,

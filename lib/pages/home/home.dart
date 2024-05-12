@@ -8,11 +8,7 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Outer(child: Builder(builder: (context) {
-      final ScreenModel screenModel = context.watch<ScreenModel>();
-      return Center(
-        child: Text('${screenModel.maxWidth} - ${screenModel.maxHeight}'),
-      );
-    }));
+    bool isMobile = context.watch<ScreenModel>().isMobile;
+    return ScreenLimit(child: Text(isMobile ? 'mobile1' : 'pc1'));
   }
 }
